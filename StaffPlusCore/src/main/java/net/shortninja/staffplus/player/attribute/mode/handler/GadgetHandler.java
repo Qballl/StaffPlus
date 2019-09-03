@@ -120,7 +120,7 @@ public class GadgetHandler {
             lastRandomTeleport.put(uuid, lastIndex);
         }
 
-        message.send(player, messages.modeRandomTeleport, messages.prefixGeneral);
+        message.send(player, messages.modeRandomTeleport.replace("%target%", player.getName()), messages.prefixGeneral);
         player.teleport(currentPlayer);
     }
 
