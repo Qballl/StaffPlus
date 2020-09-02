@@ -55,7 +55,6 @@ public class PlayerInteract implements Listener {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
 
             if (StaffPlus.get().twelvePlus) {
-
                 if (event.getClickedBlock().getState() instanceof Container
                         && StaffPlus.get().modeCoordinator.isInMode(event.getPlayer().getUniqueId())
                         && !player.isSneaking()) {

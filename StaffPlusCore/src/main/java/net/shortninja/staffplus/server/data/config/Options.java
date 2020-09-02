@@ -9,6 +9,7 @@ import net.shortninja.staffplus.util.lib.JavaUtils;
 import net.shortninja.staffplus.util.lib.Sounds;
 import net.shortninja.staffplus.util.lib.hex.Items;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -441,7 +442,7 @@ public class Options implements IOptions {
             if (!config.getString("staff-mode.custom-modules." + identifier + ".enchantment", "").equalsIgnoreCase("")) {
                 String enchantInfo = config.getString("staff-mode.custom-modules." + identifier + ".enchantment");
                 String[] enchantInfoParts = enchantInfo.split(":");
-                Enchantment enchantment = Enchantment.getByName(enchantInfoParts[0]);
+                Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantInfoParts[0]));
                 int level = Integer.parseInt(enchantInfoParts[1]);
                 item = Items.builder().setMaterial(type).setData(data).setName(name).setLore(lore)
                         .addEnchantment(enchantment, level).build();
