@@ -13,33 +13,7 @@
     <modules>
         <module>StaffPlusAPI</module>
         <module>StaffPlusCore</module>
-        <module>StaffPlusBungee</module><!--> Will uncomment when module is fully ready for release-->
-        <module>v1_7_R1</module>
-        <module>v1_7_R2</module>
-        <module>v1_7_R3</module>
-        <module>v1_7_R4</module>
-        <module>v1_8_R1</module>
-        <module>v1_8_R2</module>
-        <module>v1_8_R3</module>
-        <module>v1_9_R1</module>
-        <module>v1_9_R2</module>
-        <module>v1_10_R1</module>
-        <module>v1_11_R1</module>
-        <module>v1_12_R1</module>
-        <module>v1_13_R1</module>
-        <module>v1_13_R2</module>
-        <module>v1_14_R1</module>
-        <module>v1_14_R2</module>
-        <module>v1_15_R1</module>
-        <module>v1_16_R1</module>
-		<module>v1_16_R2</module>
-        <module>v1_16_R3</module>
-        <module>v1_16_R4</module>
-		<module>v1_17_R1</module>
-        <module>v1_18_R1</module>
-        <module>v1_18_R2</module>
-        <module>v1_19_R1</module>
-        <module>v1_19_R2</module>
+        <module>StaffPlusBungee</module>
     </modules>
 
     <build>
@@ -59,7 +33,7 @@
     </build>
 
     <properties>
-        <bukkit.version>1.16.5-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.19.4-R0.1-SNAPSHOT</bukkit.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -84,7 +58,7 @@
         </repository>
         <repository>
             <id>mikeprim-repo</id>
-            <url>http://repo.mikeprimm.com/</url>
+            <url>https://repo.mikeprimm.com/</url>
         </repository>
         <!--<repository>
             <id>Qballs-repo</id>
@@ -95,17 +69,26 @@
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
+        <repository>
             <id>vault-repo</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <url>https://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+            <layout>default</layout>
         </repository>
     </repositories>
 
     <dependencies>
         <!-- Spigot -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>${bukkit.version}</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -129,6 +112,12 @@
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.10.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

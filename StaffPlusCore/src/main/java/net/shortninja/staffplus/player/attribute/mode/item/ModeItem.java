@@ -5,7 +5,6 @@ import net.shortninja.staffplus.server.compatibility.IProtocol;
 import org.bukkit.inventory.ItemStack;
 
 public class ModeItem {
-    private IProtocol versionProtocol = StaffPlus.get().versionProtocol;
     private String identifier;
     private ItemStack item;
     private int slot;
@@ -13,7 +12,7 @@ public class ModeItem {
 
     public ModeItem(String identifier, ItemStack item, int slot, boolean isEnabled) {
         this.identifier = identifier;
-        this.item = versionProtocol.addNbtString(item, identifier); // Make this item uniquely identifiable by adding an NBT tag.
+        this.item = StaffPlus.get().itemHandler.addNbtString(item, identifier); // Make this item uniquely identifiable by adding an NBT tag.
         this.slot = slot;
         this.isEnabled = isEnabled;
     }

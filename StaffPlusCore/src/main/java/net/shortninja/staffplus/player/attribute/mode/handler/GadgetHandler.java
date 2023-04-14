@@ -7,7 +7,7 @@ import net.shortninja.staffplus.player.attribute.gui.ExamineGui;
 import net.shortninja.staffplus.player.attribute.gui.hub.HubGui;
 import net.shortninja.staffplus.player.attribute.mode.item.ModeItem;
 import net.shortninja.staffplus.player.attribute.mode.item.ModuleConfiguration;
-import net.shortninja.staffplus.server.compatibility.IProtocol;
+import net.shortninja.staffplus.server.compatibility.IItemHandler;
 import net.shortninja.staffplus.server.data.config.Messages;
 import net.shortninja.staffplus.server.data.config.Options;
 import net.shortninja.staffplus.util.MessageCoordinator;
@@ -23,7 +23,7 @@ import java.util.*;
 
 public class GadgetHandler {
     private static Map<UUID, Integer> lastRandomTeleport = new HashMap<UUID, Integer>();
-    private IProtocol versionProtocol = StaffPlus.get().versionProtocol;
+    private IItemHandler itemHandler = StaffPlus.get().itemHandler;
     private PermissionHandler permission = StaffPlus.get().permission;
     private MessageCoordinator message = StaffPlus.get().message;
     private UserManager userManager = StaffPlus.get().userManager;
@@ -71,7 +71,7 @@ public class GadgetHandler {
     }
 
     public ModuleConfiguration getModule(ItemStack item) {
-        return StaffPlus.get().options.moduleConfigurations.get(versionProtocol.getNbtString(item));
+        return StaffPlus.get().options.moduleConfigurations.get(itemHandler.getNbtString(item));
     }
 
     public void onCompass(Player player) {
@@ -137,14 +137,14 @@ public class GadgetHandler {
 
             if (shouldUpdateItem && item != null) {
                 player.getInventory().remove(item);
-                player.getInventory().setItem(slot, versionProtocol.addNbtString(options.modeVanishItemOff, modeItem.getIdentifier()));
+                player.getInventory().setItem(slot, itemHandler.addNbtString(options.modeVanishItemOff, modeItem.getIdentifier()));
             }
         } else {
             StaffPlus.get().vanishHandler.addVanish(player, options.modeVanish);
 
             if (shouldUpdateItem && item != null) {
                 player.getInventory().remove(item);
-                player.getInventory().setItem(slot, versionProtocol.addNbtString(options.modeVanishItem, modeItem.getIdentifier()));
+                player.getInventory().setItem(slot, itemHandler.addNbtString(options.modeVanishItem, modeItem.getIdentifier()));
             }
         }
     }
@@ -232,7 +232,7 @@ public class GadgetHandler {
                     continue;
                 }
 
-                if (getGadgetType(item, versionProtocol.getNbtString(item)) == GadgetType.COUNTER) {
+                if (getGadgetType(item, itemHandler.getNbtString(item)) == GadgetType.COUNTER) {
                     item.setAmount(StaffPlus.get().options.modeCounterShowStaffMode ? modeUsers.size() : permission.getStaffCount());
                     break;
                 }

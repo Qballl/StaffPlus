@@ -110,11 +110,11 @@ public class ModeCoordinator {
                 modeItem.setItem(user.getVanishType() == options.modeVanish ? options.modeVanishItem : options.modeVanishItemOff);
             }
 
-            player.getInventory().setItem(modeItem.getSlot(), StaffPlus.get().versionProtocol.addNbtString(modeItem.getItem(), modeItem.getIdentifier()));
+            player.getInventory().setItem(modeItem.getSlot(), StaffPlus.get().itemHandler.addNbtString(modeItem.getItem(), modeItem.getIdentifier()));
         }
 
         for (ModuleConfiguration moduleConfiguration : options.moduleConfigurations.values()) {
-            player.getInventory().setItem(moduleConfiguration.getSlot(), StaffPlus.get().versionProtocol.addNbtString(moduleConfiguration.getItem(), moduleConfiguration.getIdentifier()));
+            player.getInventory().setItem(moduleConfiguration.getSlot(), StaffPlus.get().itemHandler.addNbtString(moduleConfiguration.getItem(), moduleConfiguration.getIdentifier()));
         }
     }
 

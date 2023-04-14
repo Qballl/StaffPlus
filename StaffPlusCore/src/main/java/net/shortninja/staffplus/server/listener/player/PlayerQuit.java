@@ -32,7 +32,6 @@ public class PlayerQuit implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Messages messages = StaffPlus.get().messages;
         Options options = StaffPlus.get().options;
-        StaffPlus.get().versionProtocol.uninject(event.getPlayer());
 
         Player player = event.getPlayer();
         manageUser(player);

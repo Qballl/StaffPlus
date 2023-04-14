@@ -13,9 +13,13 @@ import net.shortninja.staffplus.server.command.cmd.security.ResetPassCmd;
 import net.shortninja.staffplus.server.compatibility.IProtocol;
 import net.shortninja.staffplus.server.data.config.Options;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 //import net.shortninja.staffplus.server.command.cmd.security.ChangePassCmd;
@@ -59,7 +63,12 @@ public class CmdHandler {
             };
 
     public CmdHandler() {
-        registerCommands();
+        try {
+            registerCommands();
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+            StaffPlus.get().getLogger().severe("Command handler failed to register commands.");
+            throw new RuntimeException(e);
+        }
     }
 
     public void attemptCommand(CommandSender sender, String label, String[] args) {
@@ -76,10 +85,16 @@ public class CmdHandler {
         }
     }
 
-    private void registerCommands() {
+    private void registerCommands() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        // Get the command map
+        Method getCommandMap = Bukkit.getServer().getClass().getDeclaredMethod("getCommandMap");
+        final SimpleCommandMap map = (SimpleCommandMap) getCommandMap.invoke(Bukkit.getServer());
+
+        // Register all commands
         for (BaseCmd baseCmd : BASES) {
             if (baseCmd.isEnabled()) {
-                versionProtocol.registerCommand(baseCmd.getMatch(), baseCmd.getCommand());
+                map.register(baseCmd.getMatch(), baseCmd.getCommand());
             }
         }
     }

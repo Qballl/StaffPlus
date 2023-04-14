@@ -5,6 +5,7 @@ import net.shortninja.staffplus.player.attribute.mode.ModeCoordinator;
 import net.shortninja.staffplus.player.attribute.mode.handler.CpsHandler;
 import net.shortninja.staffplus.player.attribute.mode.handler.GadgetHandler;
 import net.shortninja.staffplus.player.attribute.mode.item.ModuleConfiguration;
+import net.shortninja.staffplus.server.compatibility.IItemHandler;
 import net.shortninja.staffplus.server.compatibility.IProtocol;
 import net.shortninja.staffplus.util.lib.JavaUtils;
 import org.bukkit.Bukkit;
@@ -25,7 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class PlayerInteract implements Listener {
-    private IProtocol versionProtocol = StaffPlus.get().versionProtocol;
+    private IItemHandler itemHandler = StaffPlus.get().itemHandler;
     private ModeCoordinator modeCoordinator = StaffPlus.get().modeCoordinator;
     private CpsHandler cpsHandler = StaffPlus.get().cpsHandler;
     private GadgetHandler gadgetHandler = StaffPlus.get().gadgetHandler;
@@ -65,7 +66,7 @@ public class PlayerInteract implements Listener {
         }
 
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-            if(handleInteraction(player, event.getItem(), event.getAction())){
+            if(handleInteraction(player, item, event.getAction())){
                 event.setCancelled(true);
             }
 
@@ -120,7 +121,7 @@ public class PlayerInteract implements Listener {
 
 
 
-        switch (gadgetHandler.getGadgetType(item, versionProtocol.getNbtString(item))) {
+        switch (gadgetHandler.getGadgetType(item, itemHandler.getNbtString(item))) {
             case COMPASS:
                 gadgetHandler.onCompass(player);
                 break;

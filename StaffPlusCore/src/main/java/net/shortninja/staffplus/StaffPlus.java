@@ -1,5 +1,7 @@
 package net.shortninja.staffplus;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import net.shortninja.staffplus.player.NodeUser;
 import net.shortninja.staffplus.player.UserManager;
 import net.shortninja.staffplus.player.attribute.SecurityHandler;
@@ -12,24 +14,8 @@ import net.shortninja.staffplus.server.PacketModifier;
 import net.shortninja.staffplus.server.chat.ChatHandler;
 import net.shortninja.staffplus.server.command.CmdHandler;
 
+import net.shortninja.staffplus.server.compatibility.IItemHandler;
 import net.shortninja.staffplus.server.compatibility.IProtocol;
-import net.shortninja.staffplus.server.compatibility.v1_10_R1.Protocol_v1_10_R1;
-import net.shortninja.staffplus.server.compatibility.v1_11_R1.Protocol_v1_11_R1;
-import net.shortninja.staffplus.server.compatibility.v1_12_R1.Protocol_v1_12_R1;
-import net.shortninja.staffplus.server.compatibility.v1_13_R1.Protocol_v1_13_R1;
-import net.shortninja.staffplus.server.compatibility.v1_13_R2.Protocol_v1_13_R2;
-import net.shortninja.staffplus.server.compatibility.v1_14_R1.Protocol_v1_14_R1;
-import net.shortninja.staffplus.server.compatibility.v1_14_R2.Protocol_v1_14_R2;
-import net.shortninja.staffplus.server.compatibility.v1_1x.*;
-import net.shortninja.staffplus.server.compatibility.v1_7_R1.Protocol_v1_7_R1;
-import net.shortninja.staffplus.server.compatibility.v1_7_R2.Protocol_v1_7_R2;
-import net.shortninja.staffplus.server.compatibility.v1_7_R3.Protocol_v1_7_R3;
-import net.shortninja.staffplus.server.compatibility.v1_7_R4.Protocol_v1_7_R4;
-import net.shortninja.staffplus.server.compatibility.v1_8_R1.Protocol_v1_8_R1;
-import net.shortninja.staffplus.server.compatibility.v1_8_R2.Protocol_v1_8_R2;
-import net.shortninja.staffplus.server.compatibility.v1_8_R3.Protocol_v1_8_R3;
-import net.shortninja.staffplus.server.compatibility.v1_9_R1.Protocol_v1_9_R1;
-import net.shortninja.staffplus.server.compatibility.v1_9_R2.Protocol_v1_9_R2;
 import net.shortninja.staffplus.server.data.*;
 import net.shortninja.staffplus.server.data.storage.FlatFileStorage;
 import net.shortninja.staffplus.server.data.storage.IStorage;
@@ -50,6 +36,9 @@ import net.shortninja.staffplus.server.listener.entity.EntityDamage;
 import net.shortninja.staffplus.server.listener.entity.EntityDamageByEntity;
 import net.shortninja.staffplus.server.listener.entity.EntityTarget;
 import net.shortninja.staffplus.server.listener.player.*;
+import net.shortninja.staffplus.server.nms.PacketHandler;
+import net.shortninja.staffplus.server.nms.nbt.BukkitHandler;
+import net.shortninja.staffplus.server.nms.nbt.NBTHandler;
 import net.shortninja.staffplus.unordered.IUser;
 import net.shortninja.staffplus.util.MessageCoordinator;
 import net.shortninja.staffplus.util.Metrics;
@@ -62,8 +51,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-/*import org.inventivetalent.apihelper.APIManager;
-import org.inventivetalent.packetlistener.PacketListenerAPI;*/
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
@@ -104,6 +91,8 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
     public UUID consoleUUID = UUID.fromString("9c417515-22bc-46b8-be4d-538482992f8f");
     public Tasks tasks;
     public Map<UUID, IUser> users;
+    public ProtocolManager protocolManager;
+    public IItemHandler itemHandler;
     private MySQLConnection mySQLConnection;
     public boolean ninePlus = false;
     public HashMap<Inventory, Block> viewedChest = new HashMap<>();
@@ -228,97 +217,14 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
     }
 
     private boolean setupVersionProtocol() {
-        final String version = Bukkit.getServer().getClass().getPackage().getName();
-        final String formattedVersion = version.substring(version.lastIndexOf('.') + 1);
-        switch (formattedVersion) {
-            case "v1_7_R1":
-                versionProtocol = new Protocol_v1_7_R1(this);
-                break;
-            case "v1_7_R2":
-                versionProtocol = new Protocol_v1_7_R2(this);
-                break;
-            case "v1_7_R3":
-                versionProtocol = new Protocol_v1_7_R3(this);
-                break;
-            case "v1_7_R4":
-                versionProtocol = new Protocol_v1_7_R4(this);
-                break;
-            case "v1_8_R1":
-                versionProtocol = new Protocol_v1_8_R1(this);
-                break;
-            case "v1_8_R2":
-                versionProtocol = new Protocol_v1_8_R2(this);
-                break;
-            case "v1_8_R3":
-                versionProtocol = new Protocol_v1_8_R3(this);
-                break;
-            case "v1_9_R1":
-                versionProtocol = new Protocol_v1_9_R1(this);
-                break;
-            case "v1_9_R2":
-                versionProtocol = new Protocol_v1_9_R2(this);
-                break;
-            case "v1_10_R1":
-                versionProtocol = new Protocol_v1_10_R1(this);
-                break;
-            case "v1_11_R1":
-                versionProtocol = new Protocol_v1_11_R1(this);
-                break;
-            case "v1_12_R1":
-                versionProtocol = new Protocol_v1_12_R1(this);
-                break;
-            case "v1_13_R1":
-                versionProtocol = new Protocol_v1_13_R1(this);
-                break;
-            case "v1_13_R2":
-                versionProtocol = new Protocol_v1_13_R2(this);
-                break;
-            case "v1_14_R1":
-                String[] tmp = Bukkit.getServer().getVersion().split("MC: ");
-                String ver = tmp[tmp.length - 1].substring(0, 6);
-                if(ver.equals("1.14.3")||ver.equals("1.14.4"))
-                    versionProtocol = new Protocol_v1_14_R2(this);
-                else
-                    versionProtocol = new Protocol_v1_14_R1(this);
-                break;
-            case "v1_15_R1":
-                versionProtocol = new Protocol_v1_15_R1(this);
-                break;
-            case "v1_16_R1":
-                tmp = Bukkit.getServer().getVersion().split("MC: ");
-                ver = tmp[tmp.length - 1].substring(0, 6);
-                if(ver.equals("1.16.5"))
-                    versionProtocol = new Protocol_v1_16_R4(this);
-                else
-                    versionProtocol = new Protocol_v1_16_R1(this);
-                break;
-            case "v1_16_R2":
-                versionProtocol = new Protocol_v1_16_R2(this);
-                break;
-            case "v1_16_R3":
-                versionProtocol = new Protocol_v1_16_R3(this);
-                break;
-            case "v1_17_R1":
-                versionProtocol = new Protocol_v1_17_R1(this);
-                break;
-            case "v1_18_R1":
-                versionProtocol = new Protocol_v1_18_R1(this);
-                break;
-            case "v1_18_R2":
-                versionProtocol = new Protocol_v1_18_R2(this);
-                break;
-            case "v1_19_R1":
-                versionProtocol = new Protocol_v1_19_R1(this);
-                break;
-            case "v1_19_R2":
-                versionProtocol = new Protocol_v1_19_R2(this);
-        }
 
-        if (versionProtocol != null) {
-            message.sendConsoleMessage("Version protocol set to '" + formattedVersion + "'.", false);
-        }
+        // Get ProtocolLib
+        protocolManager = ProtocolLibrary.getProtocolManager();
+        protocolManager.addPacketListener(new PacketHandler(this));
 
-        return versionProtocol != null;
+        // Get an item handler
+        itemHandler = Bukkit.getPluginManager().isPluginEnabled("NBT-API") ? new NBTHandler() : new BukkitHandler();
+        return true;
     }
 
     private void registerListeners() {
