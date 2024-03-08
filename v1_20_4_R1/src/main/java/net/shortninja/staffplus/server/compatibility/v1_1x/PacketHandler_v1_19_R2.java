@@ -10,9 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-public final class PacketHandler_v1_19_R2 extends AbstractPacketHandler {
+public final class PacketHandler_v1_20_4_R1 extends AbstractPacketHandler {
 
-    public PacketHandler_v1_19_R2(Player player) {
+    public PacketHandler_v1_20_4_R1(Player player) {
         super(player);
     }
 

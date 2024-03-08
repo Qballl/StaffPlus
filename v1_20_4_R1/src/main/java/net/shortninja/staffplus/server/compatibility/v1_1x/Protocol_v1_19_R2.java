@@ -27,10 +27,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_4_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_20_4_R1.entity.CraftPlayer;
 
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_4_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
 
@@ -38,8 +38,8 @@ import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.*;
 
-public class Protocol_v1_19_R2 extends AbstractProtocol implements IProtocol {
-    public Protocol_v1_19_R2(IStaffPlus staffPlus) {
+public class Protocol_v1_20_4_R1 extends AbstractProtocol implements IProtocol {
+    public Protocol_v1_20_4_R1(IStaffPlus staffPlus) {
         super(staffPlus);
     }
 

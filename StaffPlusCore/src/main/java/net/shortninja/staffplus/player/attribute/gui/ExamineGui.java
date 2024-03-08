@@ -245,7 +245,7 @@ public class ExamineGui extends AbstractGui {
 
     private ItemStack gameModeItem(Player player) {
         ItemStack item = Items.builder()
-                .setMaterial(Material.GRASS).setAmount(1)
+                .setMaterial(Material.GRASS_BLOCK).setAmount(1)
                 .setName("&bGamemode")
                 .addLore(StaffPlus.get().messages.examineGamemode.replace("%gamemode%", player.getGameMode().toString()))
                 .build();
