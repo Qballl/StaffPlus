@@ -229,7 +229,11 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
 
     private boolean setupVersionProtocol() {
         final String version = Bukkit.getServer().getClass().getPackage().getName();
-        final String formattedVersion = version.substring(version.lastIndexOf('.') + 1);
+        String formattedVersion = "";
+        if(Bukkit.getBukkitVersion().equals("1.20.6-R0.1-SNAPSHOT"))
+            formattedVersion = "v1_20_R4";
+        else
+            formattedVersion = version.substring(version.lastIndexOf('.') + 1);
         switch (formattedVersion) {
             case "v1_7_R1":
                 versionProtocol = new Protocol_v1_7_R1(this);
@@ -312,6 +316,13 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
                 break;
             case "v1_19_R2":
                 versionProtocol = new Protocol_v1_19_R2(this);
+                break;
+            case  "v1_20_R3":
+                versionProtocol  = new Protocol_v1_20_R3(this);
+                break;
+            case  "v1_20_R4":
+                versionProtocol  = new Protocol_v1_20_R4(this);
+                break;
         }
 
         if (versionProtocol != null) {

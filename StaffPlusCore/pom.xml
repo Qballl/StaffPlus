@@ -5,7 +5,7 @@
     <parent>
         <artifactId>StaffPlus</artifactId>
         <groupId>net.shortninja.staffplus</groupId>
-        <version>3.3.12.0</version>
+        <version>3.3.14.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>StaffPlusAPI</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -180,28 +180,28 @@
 		<dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_16_R1</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
 		
 		<dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_16_R2</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_16_R4</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_17_R1</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
             <classifier>remapped-spigot</classifier>
         </dependency>
@@ -338,48 +338,60 @@
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_16_R3</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_16_R3</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_18_R1</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_18_R1</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_18_R2</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_19_R1</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>StaffPlusBungee</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
         </dependency>
         <dependency>
             <groupId>net.shortninja.staffplus</groupId>
             <artifactId>v1_19_R2</artifactId>
-            <version>3.3.12.0</version>
+            <version>3.3.14.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.shortninja.staffplus</groupId>
+            <artifactId>v1_20_R3</artifactId>
+            <version>3.3.14.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.shortninja.staffplus</groupId>
+            <artifactId>v1_20_R4</artifactId>
+            <version>3.3.14.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

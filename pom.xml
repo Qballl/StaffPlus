@@ -8,7 +8,7 @@
     <description>The ultimate moderation plugin.</description>
     <artifactId>StaffPlus</artifactId>
     <packaging>pom</packaging>
-    <version>3.3.12.0</version>
+    <version>3.3.14.1</version>
 
     <modules>
         <module>StaffPlusAPI</module>
@@ -40,6 +40,9 @@
         <module>v1_18_R2</module>
         <module>v1_19_R1</module>
         <module>v1_19_R2</module>
+        <module>v1_19_R3</module>
+        <module>v1_20_R3</module>
+        <module>v1_20_R4</module>
     </modules>
 
     <build>
@@ -59,7 +62,7 @@
     </build>
 
     <properties>
-        <bukkit.version>1.16.5-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.20.6-R0.1-SNAPSHOT</bukkit.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
