@@ -42,8 +42,7 @@ public class User implements IUser {
 
     static {
         try {
-            final String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-            //final String version = StaffPlus.get().versionProtocol.getVersion();
+            final String version = StaffPlus.getVersion();
 
             craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
             entityPlayerClass = Class.forName("net.minecraft.server." + version + ".EntityPlayer");

@@ -112,225 +112,241 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
     public IStorage storage;
     public InventoryHandler inventoryHandler;
     public boolean usesPlaceholderAPI;
-
-    public static StaffPlus get() {
-        return plugin;
-    }
-
-    @Override
-    public void onLoad() {
-
-        Bukkit.getLogger().setFilter(new PasswordFilter()); // FIXME
-        plugin = this;
-        Plugin placeholderPlugin;
-        if ((placeholderPlugin = Bukkit.getPluginManager().getPlugin("PlaceholderAPI")) != null) {
-            usesPlaceholderAPI = true;
-            new PAPIExpansion().register();
-            Bukkit.getLogger().info("Hooked into PlaceholderAPI " + placeholderPlugin.getDescription().getVersion());
+    
+    private static String formattedVersion;
+    
+        public static StaffPlus get() {
+            return plugin;
         }
-    }
-
-    @Override
-    public void onEnable() {
-
-        saveDefaultConfig();
-        permission = new PermissionHandler(this);
-        message = new MessageCoordinator(this);
-        options = new Options();
-        start(System.currentTimeMillis());
-        if (options.storageType.equalsIgnoreCase("mysql")) {
-            storage = new MySQLStorage(new MySQLConnection());
-        } else if (options.storageType.equalsIgnoreCase("flatfile"))
-            storage = new FlatFileStorage();
-        else {
-            storage = new MemoryStorage();
-            Bukkit.getLogger().warning("Storage type is invalid, defaulting to memory-based storage. IMPORTANT: Any changes are not persistent.");
+    
+        @Override
+        public void onLoad() {
+    
+            Bukkit.getLogger().setFilter(new PasswordFilter()); // FIXME
+            plugin = this;
+            Plugin placeholderPlugin;
+            if ((placeholderPlugin = Bukkit.getPluginManager().getPlugin("PlaceholderAPI")) != null) {
+                usesPlaceholderAPI = true;
+                new PAPIExpansion().register();
+                Bukkit.getLogger().info("Hooked into PlaceholderAPI " + placeholderPlugin.getDescription().getVersion());
+            }
         }
-
-
-        if (getConfig().getBoolean("metrics"))
-            new Metrics(this);
-        checkUpdate();
-
-        storage.onEnable();
-
-        hookHandler.addHook(new SuperVanishHook(this));
-        hookHandler.enableAll();
-    }
-
-
-    @Override
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    @Override
-    public void onDisable() {
-        message.sendConsoleMessage("Staff+ is now disabling!", true);
-        stop();
-    }
-
-    public void saveUsers() {
-        for (IUser user : userManager.getAll()) {
-            new Save(new NodeUser(user));
+    
+        @Override
+        public void onEnable() {
+    
+            saveDefaultConfig();
+            permission = new PermissionHandler(this);
+            message = new MessageCoordinator(this);
+            options = new Options();
+            start(System.currentTimeMillis());
+            if (options.storageType.equalsIgnoreCase("mysql")) {
+                storage = new MySQLStorage(new MySQLConnection());
+            } else if (options.storageType.equalsIgnoreCase("flatfile"))
+                storage = new FlatFileStorage();
+            else {
+                storage = new MemoryStorage();
+                Bukkit.getLogger().warning("Storage type is invalid, defaulting to memory-based storage. IMPORTANT: Any changes are not persistent.");
+            }
+    
+    
+            if (getConfig().getBoolean("metrics"))
+                new Metrics(this);
+            checkUpdate();
+    
+            storage.onEnable();
+    
+            hookHandler.addHook(new SuperVanishHook(this));
+            hookHandler.enableAll();
         }
-
-        dataFile.save();
-    }
-
-    public IStorage getStorage() {
-        return storage;
-    }
-
-    protected void start(long start) {
-        users = new HashMap<>();
-        if (!setupVersionProtocol()) {
-            message.sendConsoleMessage("This version of Minecraft is not supported! If you have just updated to a brand new server version, check the Spigot plugin page.", true);
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
+    
+    
+        @Override
+        public UserManager getUserManager() {
+            return userManager;
         }
-        String[] tmp = Bukkit.getServer().getVersion().split("MC: ");
-        String version = tmp[tmp.length - 1].substring(0, 4);
-        ninePlus = JavaUtils.parseMcVer(version) >= 9;
-        twelvePlus = JavaUtils.parseMcVer(version) >= 12;
-        thirteenPlus = JavaUtils.parseMcVer(version) >= 13;
-        dataFile = new DataFile("data.yml");
-        languageFile = new LanguageFile();
-        messages = new Messages();
-        userManager = new UserManager(this);
-        securityHandler = new SecurityHandler(); // FIXME
-        hookHandler = new HookHandler();
-        cpsHandler = new CpsHandler();
-        freezeHandler = new FreezeHandler();
-        gadgetHandler = new GadgetHandler();
-        reviveHandler = new ReviveHandler();
-        vanishHandler = new VanishHandler();
-        chatHandler = new ChatHandler();
-        ticketHandler = new TicketHandler();
-        cmdHandler = new CmdHandler();
-        modeCoordinator = new ModeCoordinator();
-        infractionCoordinator = new InfractionCoordinator();
-        alertCoordinator = new AlertCoordinator();
-        tasks = new Tasks();
-        inventoryHandler = new InventoryHandler();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            new Load(player);
+    
+        @Override
+        public void onDisable() {
+            message.sendConsoleMessage("Staff+ is now disabling!", true);
+            stop();
         }
-        registerListeners();
-        new ChangelogFile();
-
-        if (!options.disablePackets || !options.animationPackets.isEmpty() || !options.soundNames.isEmpty()) {
-            new PacketModifier();
+    
+        public void saveUsers() {
+            for (IUser user : userManager.getAll()) {
+                new Save(new NodeUser(user));
+            }
+    
+            dataFile.save();
         }
-
-        message.sendConsoleMessage("Staff+ has been enabled! Initialization took " + (System.currentTimeMillis() - start) + "ms.", false);
-        message.sendConsoleMessage("Plugin created by Shortninja continued by Qball.", false);
-    }
-
-    private boolean setupVersionProtocol() {
-        final String version = Bukkit.getServer().getClass().getPackage().getName();
-        String formattedVersion = "";
-        if(Bukkit.getBukkitVersion().equals("1.20.6-R0.1-SNAPSHOT"))
-            formattedVersion = "v1_20_R4";
-        else
-            formattedVersion = version.substring(version.lastIndexOf('.') + 1);
-        switch (formattedVersion) {
-            case "v1_7_R1":
-                versionProtocol = new Protocol_v1_7_R1(this);
-                break;
-            case "v1_7_R2":
-                versionProtocol = new Protocol_v1_7_R2(this);
-                break;
-            case "v1_7_R3":
-                versionProtocol = new Protocol_v1_7_R3(this);
-                break;
-            case "v1_7_R4":
-                versionProtocol = new Protocol_v1_7_R4(this);
-                break;
-            case "v1_8_R1":
-                versionProtocol = new Protocol_v1_8_R1(this);
-                break;
-            case "v1_8_R2":
-                versionProtocol = new Protocol_v1_8_R2(this);
-                break;
-            case "v1_8_R3":
-                versionProtocol = new Protocol_v1_8_R3(this);
-                break;
-            case "v1_9_R1":
-                versionProtocol = new Protocol_v1_9_R1(this);
-                break;
-            case "v1_9_R2":
-                versionProtocol = new Protocol_v1_9_R2(this);
-                break;
-            case "v1_10_R1":
-                versionProtocol = new Protocol_v1_10_R1(this);
-                break;
-            case "v1_11_R1":
-                versionProtocol = new Protocol_v1_11_R1(this);
-                break;
-            case "v1_12_R1":
-                versionProtocol = new Protocol_v1_12_R1(this);
-                break;
-            case "v1_13_R1":
-                versionProtocol = new Protocol_v1_13_R1(this);
-                break;
-            case "v1_13_R2":
-                versionProtocol = new Protocol_v1_13_R2(this);
-                break;
-            case "v1_14_R1":
-                String[] tmp = Bukkit.getServer().getVersion().split("MC: ");
-                String ver = tmp[tmp.length - 1].substring(0, 6);
-                if(ver.equals("1.14.3")||ver.equals("1.14.4"))
-                    versionProtocol = new Protocol_v1_14_R2(this);
-                else
-                    versionProtocol = new Protocol_v1_14_R1(this);
-                break;
-            case "v1_15_R1":
-                versionProtocol = new Protocol_v1_15_R1(this);
-                break;
-            case "v1_16_R1":
-                tmp = Bukkit.getServer().getVersion().split("MC: ");
-                ver = tmp[tmp.length - 1].substring(0, 6);
-                if(ver.equals("1.16.5"))
-                    versionProtocol = new Protocol_v1_16_R4(this);
-                else
-                    versionProtocol = new Protocol_v1_16_R1(this);
-                break;
-            case "v1_16_R2":
-                versionProtocol = new Protocol_v1_16_R2(this);
-                break;
-            case "v1_16_R3":
-                versionProtocol = new Protocol_v1_16_R3(this);
-                break;
-            case "v1_17_R1":
-                versionProtocol = new Protocol_v1_17_R1(this);
-                break;
-            case "v1_18_R1":
-                versionProtocol = new Protocol_v1_18_R1(this);
-                break;
-            case "v1_18_R2":
-                versionProtocol = new Protocol_v1_18_R2(this);
-                break;
-            case "v1_19_R1":
-                versionProtocol = new Protocol_v1_19_R1(this);
-                break;
-            case "v1_19_R2":
-                versionProtocol = new Protocol_v1_19_R2(this);
-                break;
-            case  "v1_20_R3":
-                versionProtocol  = new Protocol_v1_20_R3(this);
-                break;
-            case  "v1_20_R4":
-                versionProtocol  = new Protocol_v1_20_R4(this);
-                break;
+    
+        public IStorage getStorage() {
+            return storage;
         }
-
-        if (versionProtocol != null) {
-            message.sendConsoleMessage("Version protocol set to '" + formattedVersion + "'.", false);
+    
+        protected void start(long start) {
+            users = new HashMap<>();
+            if (!setupVersionProtocol()) {
+                message.sendConsoleMessage("This version of Minecraft is not supported! If you have just updated to a brand new server version, check the Spigot plugin page.", true);
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
+            String[] tmp = Bukkit.getServer().getVersion().split("MC: ");
+            String version = tmp[tmp.length - 1].substring(0, 4);
+            ninePlus = JavaUtils.parseMcVer(version) >= 9;
+            twelvePlus = JavaUtils.parseMcVer(version) >= 12;
+            thirteenPlus = JavaUtils.parseMcVer(version) >= 13;
+            dataFile = new DataFile("data.yml");
+            languageFile = new LanguageFile();
+            messages = new Messages();
+            userManager = new UserManager(this);
+            securityHandler = new SecurityHandler(); // FIXME
+            hookHandler = new HookHandler();
+            cpsHandler = new CpsHandler();
+            freezeHandler = new FreezeHandler();
+            gadgetHandler = new GadgetHandler();
+            reviveHandler = new ReviveHandler();
+            vanishHandler = new VanishHandler();
+            chatHandler = new ChatHandler();
+            ticketHandler = new TicketHandler();
+            cmdHandler = new CmdHandler();
+            modeCoordinator = new ModeCoordinator();
+            infractionCoordinator = new InfractionCoordinator();
+            alertCoordinator = new AlertCoordinator();
+            tasks = new Tasks();
+            inventoryHandler = new InventoryHandler();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                new Load(player);
+            }
+            registerListeners();
+            new ChangelogFile();
+    
+            if (!options.disablePackets || !options.animationPackets.isEmpty() || !options.soundNames.isEmpty()) {
+                new PacketModifier();
+            }
+    
+            message.sendConsoleMessage("Staff+ has been enabled! Initialization took " + (System.currentTimeMillis() - start) + "ms.", false);
+            message.sendConsoleMessage("Plugin created by Shortninja continued by Qball.", false);
         }
+    
+        private boolean setupVersionProtocol() {
+            final String version = Bukkit.getServer().getClass().getPackage().getName();
+            if(Bukkit.getBukkitVersion().equals("1.20.6-R0.1-SNAPSHOT"))
+                formattedVersion = "v1_20_R4";
+            else if(Bukkit.getBukkitVersion().equals("1.21-R0.1-SNAPSHOT") || Bukkit.getBukkitVersion().equals("1.21.1-R0.1-SNAPSHOT"))
+                formattedVersion = "v1_21_R1";
+            else if(Bukkit.getBukkitVersion().equals("1.21.2-R0.1-SNAPSHOT") || Bukkit.getBukkitVersion().equals("1.21.3-R0.1-SNAPSHOT"))
+                formattedVersion = "v1_21_R2";
+            else if(Bukkit.getBukkitVersion().equals("1.21.4-R0.1-SNAPSHOT"))
+                formattedVersion = "v1_21_R3";
+            else
+                formattedVersion = version.substring(version.lastIndexOf('.') + 1);
+            switch (formattedVersion) {
+                case "v1_7_R1":
+                    versionProtocol = new Protocol_v1_7_R1(this);
+                    break;
+                case "v1_7_R2":
+                    versionProtocol = new Protocol_v1_7_R2(this);
+                    break;
+                case "v1_7_R3":
+                    versionProtocol = new Protocol_v1_7_R3(this);
+                    break;
+                case "v1_7_R4":
+                    versionProtocol = new Protocol_v1_7_R4(this);
+                    break;
+                case "v1_8_R1":
+                    versionProtocol = new Protocol_v1_8_R1(this);
+                    break;
+                case "v1_8_R2":
+                    versionProtocol = new Protocol_v1_8_R2(this);
+                    break;
+                case "v1_8_R3":
+                    versionProtocol = new Protocol_v1_8_R3(this);
+                    break;
+                case "v1_9_R1":
+                    versionProtocol = new Protocol_v1_9_R1(this);
+                    break;
+                case "v1_9_R2":
+                    versionProtocol = new Protocol_v1_9_R2(this);
+                    break;
+                case "v1_10_R1":
+                    versionProtocol = new Protocol_v1_10_R1(this);
+                    break;
+                case "v1_11_R1":
+                    versionProtocol = new Protocol_v1_11_R1(this);
+                    break;
+                case "v1_12_R1":
+                    versionProtocol = new Protocol_v1_12_R1(this);
+                    break;
+                case "v1_13_R1":
+                    versionProtocol = new Protocol_v1_13_R1(this);
+                    break;
+                case "v1_13_R2":
+                    versionProtocol = new Protocol_v1_13_R2(this);
+                    break;
+                case "v1_14_R1":
+                    String[] tmp = Bukkit.getServer().getVersion().split("MC: ");
+                    String ver = tmp[tmp.length - 1].substring(0, 6);
+                    if(ver.equals("1.14.3")||ver.equals("1.14.4"))
+                        versionProtocol = new Protocol_v1_14_R2(this);
+                    else
+                        versionProtocol = new Protocol_v1_14_R1(this);
+                    break;
+                case "v1_15_R1":
+                    versionProtocol = new Protocol_v1_15_R1(this);
+                    break;
+                case "v1_16_R1":
+                    tmp = Bukkit.getServer().getVersion().split("MC: ");
+                    ver = tmp[tmp.length - 1].substring(0, 6);
+                    if(ver.equals("1.16.5"))
+                        versionProtocol = new Protocol_v1_16_R4(this);
+                    else
+                        versionProtocol = new Protocol_v1_16_R1(this);
+                    break;
+                case "v1_16_R2":
+                    versionProtocol = new Protocol_v1_16_R2(this);
+                    break;
+                case "v1_16_R3":
+                    versionProtocol = new Protocol_v1_16_R3(this);
+                    break;
+                case "v1_17_R1":
+                    versionProtocol = new Protocol_v1_17_R1(this);
+                    break;
+                case "v1_18_R1":
+                    versionProtocol = new Protocol_v1_18_R1(this);
+                    break;
+                case "v1_18_R2":
+                    versionProtocol = new Protocol_v1_18_R2(this);
+                    break;
+                case "v1_19_R1":
+                    versionProtocol = new Protocol_v1_19_R1(this);
+                    break;
+                case "v1_19_R2":
+                    versionProtocol = new Protocol_v1_19_R2(this);
+                    break;
+                case  "v1_20_R3":
+                    versionProtocol  = new Protocol_v1_20_R3(this);
+                    break;
+                case  "v1_20_R4":
+                    versionProtocol  = new Protocol_v1_20_R4(this);
+                    break;
+                case  "v1_21_R1":
+                    versionProtocol  = new Protocol_v1_21_R1(this);
+                    break;
+                case  "v1_21_R2":
+                    versionProtocol  = new Protocol_v1_21_R2(this);
+                    break;
+                case  "v1_21_R3":
+                    versionProtocol  = new Protocol_v1_21_R3(this);
+                    break;
+            }
 
-        return versionProtocol != null;
-    }
+            if (versionProtocol != null) {
+                message.sendConsoleMessage("Version protocol set to '" + formattedVersion + "'.", false);
+            }
+
+            return versionProtocol != null;
+        }
 
     private void registerListeners() {
         new EntityDamage();
@@ -464,5 +480,10 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
         public boolean isLoggable(LogRecord record) {
             return !record.getMessage().toLowerCase().contains("/register") && !record.getMessage().toLowerCase().contains("/login");
         }
+    }
+
+
+    public static String getVersion() {
+        return formattedVersion;
     }
 }

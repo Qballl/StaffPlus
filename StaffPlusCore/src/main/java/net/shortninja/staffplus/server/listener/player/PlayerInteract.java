@@ -1,5 +1,6 @@
 package net.shortninja.staffplus.server.listener.player;
 
+import net.minecraft.server.v1_14_R1.EntityFox.i;
 import net.shortninja.staffplus.StaffPlus;
 import net.shortninja.staffplus.player.attribute.mode.ModeCoordinator;
 import net.shortninja.staffplus.player.attribute.mode.handler.CpsHandler;
@@ -41,7 +42,6 @@ public class PlayerInteract implements Listener {
         Action action = event.getAction();
         ItemStack item = player.getItemInHand();
 
-
         if (cpsHandler.isTesting(uuid) && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
             cpsHandler.updateCount(uuid);
             return;
@@ -50,24 +50,17 @@ public class PlayerInteract implements Listener {
         if (!modeCoordinator.isInMode(uuid) || item == null) {
             return;
         }
-        if (modeCoordinator.isInMode(uuid)) {
 
-            if (handleInteraction(player, item, action)) {
-                event.setCancelled(true);
-            }
+        if (event.getItem() == null || !item.isSimilar(event.getItem())) { // 1.9+ fix for offhand, interact event is called twice and we only want to handle the main hand
+            event.setCancelled(true);
+            return;
         }
-
-        if (modeCoordinator.isInMode(uuid) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-
-            if (handleInteraction(player, item, action)) {
-                event.setCancelled(true);
-            }
+        
+        if (handleInteraction(player, item, action)) {
+            event.setCancelled(true);
         }
 
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-            if(handleInteraction(player, event.getItem(), event.getAction())){
-                event.setCancelled(true);
-            }
 
             if (StaffPlus.get().thirteenPlus) {
                 if (event.getClickedBlock().getState() instanceof Container
@@ -118,8 +111,9 @@ public class PlayerInteract implements Listener {
             return isHandled = false;
         }*/
 
-
-
+        if (item == null) {
+            return isHandled = false;
+        }
         switch (gadgetHandler.getGadgetType(item, versionProtocol.getNbtString(item))) {
             case COMPASS:
                 gadgetHandler.onCompass(player);
