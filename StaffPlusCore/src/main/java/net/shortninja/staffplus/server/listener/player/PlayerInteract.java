@@ -54,6 +54,11 @@ public class PlayerInteract implements Listener {
         }
         if (modeCoordinator.isInMode(uuid)) {
 
+            if (event.getItem() == null || !item.isSimilar(event.getItem())) { // 1.9+ fix for offhand, interact event is called twice and we only want to handle the main hand
+                event.setCancelled(true);
+                return;
+            }
+
             if (handleInteraction(player, item, action)) {
                 event.setCancelled(true);
                 return;
