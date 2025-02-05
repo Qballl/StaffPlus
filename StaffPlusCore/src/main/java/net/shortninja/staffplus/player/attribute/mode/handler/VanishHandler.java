@@ -1,6 +1,7 @@
 package net.shortninja.staffplus.player.attribute.mode.handler;
 
 import net.shortninja.staffplus.StaffPlus;
+import net.shortninja.staffplus.player.User;
 import net.shortninja.staffplus.player.UserManager;
 import net.shortninja.staffplus.server.compatibility.IProtocol;
 import net.shortninja.staffplus.server.data.config.Messages;
@@ -41,6 +42,9 @@ public class VanishHandler {
 
     public void removeVanish(Player player) {
         IUser user = userManager.get(player.getUniqueId());
+        if(user == null){
+            user = new User(player.getUniqueId(),player.getName());
+        }
         VanishType vanishType = user.getVanishType();
 
         if (vanishType == VanishType.NONE) {

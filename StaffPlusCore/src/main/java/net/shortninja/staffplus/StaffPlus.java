@@ -113,6 +113,7 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
     public InventoryHandler inventoryHandler;
     public boolean usesPlaceholderAPI;
 
+
     public static StaffPlus get() {
         return plugin;
     }
@@ -229,9 +230,15 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
 
     private boolean setupVersionProtocol() {
         final String version = Bukkit.getServer().getClass().getPackage().getName();
+        getLogger().info(version);
         String formattedVersion = "";
-        if(Bukkit.getBukkitVersion().equals("1.20.6-R0.1-SNAPSHOT"))
+        String bukkitVer = Bukkit.getBukkitVersion();
+        if(bukkitVer.equals("1.20.6-R0.1-SNAPSHOT"))
             formattedVersion = "v1_20_R4";
+        else if(bukkitVer.equals("1.21-R0.1-SNAPSHOT")||bukkitVer.equals("1.21.1-R0.1-SNAPSHOT")||bukkitVer.equals("1.21.3-R0.1-SNAPSHOT"))
+            formattedVersion = "v1_21_R1";
+        else if(bukkitVer.equals("1.21.4-R0.1-SNAPSHOT"))
+            formattedVersion = "v1_21_R3";
         else
             formattedVersion = version.substring(version.lastIndexOf('.') + 1);
         switch (formattedVersion) {
@@ -317,11 +324,23 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
             case "v1_19_R2":
                 versionProtocol = new Protocol_v1_19_R2(this);
                 break;
+            case "v1_19_R3":
+                versionProtocol = new Protocol_v1_19_R3(this);
+                break;
+            case "v1_20_R1":
+                versionProtocol = new Protocol_v1_20_R1(this);
+                break;
             case  "v1_20_R3":
                 versionProtocol  = new Protocol_v1_20_R3(this);
                 break;
             case  "v1_20_R4":
                 versionProtocol  = new Protocol_v1_20_R4(this);
+                break;
+            case "v1_21_R1":
+                versionProtocol = new Protocol_v1_21_R1(this);
+                break;
+            case "v1_21_R3":
+                versionProtocol = new Protocol_v1_21_R3(this);
                 break;
         }
 
@@ -330,6 +349,10 @@ public class StaffPlus extends JavaPlugin implements IStaffPlus {
         }
 
         return versionProtocol != null;
+    }
+
+    public IProtocol getVersionProtocol() {
+        return versionProtocol;
     }
 
     private void registerListeners() {

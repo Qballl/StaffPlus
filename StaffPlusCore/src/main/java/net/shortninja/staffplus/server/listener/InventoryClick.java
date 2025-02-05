@@ -42,7 +42,7 @@ public class InventoryClick implements Listener {
         }
 
         if (user == null)
-            return;
+            user = userManager.get(player.getUniqueId());
         if (!user.getCurrentGui().isPresent() || item == null) {
             if (modeCoordinator.isInMode(uuid) && !StaffPlus.get().options.modeInventoryInteraction) {
                 event.setCancelled(true);

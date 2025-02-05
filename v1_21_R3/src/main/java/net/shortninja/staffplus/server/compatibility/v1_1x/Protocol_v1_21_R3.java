@@ -1,0 +1,131 @@
+package net.shortninja.staffplus.server.compatibility.v1_1x;
+
+
+import net.minecraft.network.protocol.Packet;
+
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.world.item.ItemStack;
+import net.shortninja.staffplus.IStaffPlus;
+import net.shortninja.staffplus.server.compatibility.AbstractProtocol;
+import net.shortninja.staffplus.server.compatibility.IProtocol;
+import net.shortninja.staffplus.util.lib.json.JsonMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.Command;
+
+import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+
+
+import java.util.*;
+
+public class Protocol_v1_21_R3 extends AbstractProtocol implements IProtocol {
+    public Protocol_v1_21_R3(IStaffPlus staffPlus) {
+        super(staffPlus);
+    }
+
+    @Override
+    public org.bukkit.inventory.ItemStack addNbtString(org.bukkit.inventory.ItemStack item, String value) {
+        ItemStack craftItem = CraftItemStack.asNMSCopy(item);
+        NamespacedKey key = NamespacedKey.fromString("staffplus");
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(key, PersistentDataType.STRING, value); // SETS a value at the key you want
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    @Override
+    public String getNbtString(org.bukkit.inventory.ItemStack item) {
+        ItemStack craftItem = CraftItemStack.asNMSCopy(item);
+
+        if (craftItem == null) {
+            return "";
+        }
+
+        //CompoundTag nbtCompound = craftItem.getTag() == null ? new CompoundTag() : craftItem.getTag();
+        //CompoundTag nbtCompound = craftItem.getTags() == null ? new CompoundTag() : (CompoundTag) craftItem.getTags().toArray()[0];
+        PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+        return container.get(NamespacedKey.fromString("staffplus"),PersistentDataType.STRING).toString();
+       // return nbtCompound.getString(NBT_IDENTIFIER);
+        //return item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey("StaffPlus","staff"),PersistentDataType.STRING);
+    }
+
+    @Override
+    public void registerCommand(String match, Command command) {
+        ((CraftServer) Bukkit.getServer()).getCommandMap().register(match, command);
+    }
+
+
+
+
+    @Override
+    public String getSound(Object object) {
+        return null;
+    }
+
+    @Override
+    public void inject(Player player) {
+
+    }
+
+    @Override
+    public void uninject(Player player) {
+
+    }
+
+    @Override
+    public void listVanish(Player player, boolean shouldEnable) {
+        Packet packet = null;
+        CraftPlayer cp = (CraftPlayer)player;
+        ArrayList<UUID> uuids = new ArrayList<>();
+        uuids.add(player.getUniqueId());
+        if (shouldEnable) {
+            packet = new ClientboundPlayerInfoRemovePacket(uuids);
+        } else {
+            packet = new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, cp.getHandle());
+            sendGlobalPacket(packet);
+            packet = new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, cp.getHandle());
+            sendGlobalPacket(packet);
+        }
+
+        sendGlobalPacket(packet);
+    }
+
+    @Override
+    public void sendHoverableJsonMessage(Set<Player> players, String message, String hoverMessage) {
+        JsonMessage json = new JsonMessage().append(message).setHoverAsTooltip(hoverMessage).save();
+       /* ClientboundSystemChatPacket packet = new ClientboundSystemChatPacket(Component.Serializer.fromJson(json.getMessage()), false);
+        for (Player player : players) {
+            ((CraftPlayer) player).getHandle().connection.send(packet);
+        }*/
+    }
+
+
+    private void sendGlobalPacket(Packet<?> packet) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            ((CraftPlayer) player).getHandle().connection.send(packet);
+
+        }
+    }
+
+
+   /* @Override
+    public void inject(Player player) {
+        final ChannelPipeline pipeline = ((CraftPlayer) (player)).getHandle().connection;
+
+        pipeline.addBefore("packet_handler", player.getUniqueId().toString(), new PacketHandler_v1_19_R3(player));
+    }
+
+    @Override
+    public void uninject(Player player) {
+        final Channel channel = ((CraftPlayer) player).getHandle().connection.connection.channel;
+        channel.eventLoop().submit(() -> channel.pipeline().remove(player.getUniqueId().toString()));
+    }*/
+}

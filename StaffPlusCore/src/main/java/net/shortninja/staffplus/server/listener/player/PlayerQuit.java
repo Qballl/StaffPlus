@@ -56,6 +56,8 @@ public class PlayerQuit implements Listener {
 
     private void manageUser(Player player) {
         IUser user = userManager.get(player.getUniqueId());
+        if(user==null)
+            user = userManager.get(player.getUniqueId());
         Messages messages = StaffPlus.get().messages;
         Options options = StaffPlus.get().options;
         user.setOnline(false);

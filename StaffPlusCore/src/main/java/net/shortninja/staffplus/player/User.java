@@ -40,7 +40,7 @@ public class User implements IUser {
     private static Field playerConnectionField;
     private static Field pingField;
 
-    static {
+    /*static {
         try {
             final String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
             //final String version = StaffPlus.get().versionProtocol.getVersion();
@@ -54,7 +54,8 @@ public class User implements IUser {
         } catch (ReflectiveOperationException  e) {
             //throw new RuntimeException(e);
         }
-    }
+
+    }*/
 
     public User(UUID uuid, String name, short glassColor, List<IReport> reports, List<IWarning> warnings, List<String> playerNotes, Map<AlertType, Boolean> alertOptions) {
         this.uuid = uuid;

@@ -53,11 +53,12 @@ public class Protocol_v1_20_R4 extends AbstractProtocol implements IProtocol {
         if (craftItem == null) {
             return "";
         }
-
-        //CompoundTag nbtCompound = craftItem.getTag() == null ? new CompoundTag() : craftItem.getTag();
-        //CompoundTag nbtCompound = craftItem.getTags() == null ? new CompoundTag() : (CompoundTag) craftItem.getTags().toArray()[0];
-        PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-        return container.get(NamespacedKey.fromString("staffplus"),PersistentDataType.STRING).toString();
+        try {
+            PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+            return container.get(NamespacedKey.fromString("staffplus"), PersistentDataType.STRING).toString();
+        }catch (NullPointerException e){
+            return "";
+        }
        // return nbtCompound.getString(NBT_IDENTIFIER);
         //return item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey("StaffPlus","staff"),PersistentDataType.STRING);
     }

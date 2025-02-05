@@ -102,8 +102,8 @@ public class AsyncPlayerChat implements Listener {
         if (userManager == null)
             return false;
         IUser user = userManager.get(uuid);
-        if(user==null)//FIXME
-            return false;
+        if(user==null)
+            user = userManager.get(player.getUniqueId());
         IAction queuedAction = user.getQueuedAction();
 
         if (queuedAction != null) {

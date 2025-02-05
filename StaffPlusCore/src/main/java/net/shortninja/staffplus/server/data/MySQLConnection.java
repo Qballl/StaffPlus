@@ -15,7 +15,7 @@ public class MySQLConnection {
     private static HikariDataSource datasource;
     private Options options = StaffPlus.get().options;
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection    getConnection() throws SQLException {
         return datasource.getConnection();
     }
 

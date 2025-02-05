@@ -42,8 +42,11 @@ public final class InventoryFactory {
     }
 
     public static void saveEnderChest(Player player){
+        File enderDir = new File(StaffPlus.get().getDataFolder(),"Enderchests");
+        if(!enderDir.exists())
+            enderDir.mkdir();
         Bukkit.getScheduler().runTaskAsynchronously(StaffPlus.get(), () -> {
-            File file = new File(StaffPlus.get().getDataFolder(),"EnderChests.yml");
+            File file = new File(StaffPlus.get().getDataFolder()+"/Enderchests/",player.getUniqueId()+".yml");
             try{
                 if(!file.exists())
                     file.createNewFile();
@@ -63,7 +66,7 @@ public final class InventoryFactory {
     }
 
     public static Inventory createVirtualEnderChest(OfflinePlayer p){
-        File file = new File(StaffPlus.get().getDataFolder(),"EnderChests.yml");
+        File file = new File(StaffPlus.get().getDataFolder()+"/Enderchests/",p.getUniqueId()+".yml");
         Inventory eChest = Bukkit.createInventory(null,InventoryType.ENDER_CHEST);
         try {
             if(!file.exists())

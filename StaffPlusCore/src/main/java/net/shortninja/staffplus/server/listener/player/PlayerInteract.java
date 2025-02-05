@@ -21,6 +21,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 
@@ -54,59 +56,57 @@ public class PlayerInteract implements Listener {
 
             if (handleInteraction(player, item, action)) {
                 event.setCancelled(true);
+                return;
             }
+
         }
 
-        if (modeCoordinator.isInMode(uuid) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+        if (modeCoordinator.isInMode(uuid) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 
             if (handleInteraction(player, item, action)) {
                 event.setCancelled(true);
+                return;
             }
         }
 
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-            if(handleInteraction(player, event.getItem(), event.getAction())){
+        if (StaffPlus.get().thirteenPlus) {
+            if (event.getClickedBlock().getState() instanceof Container
+                    && StaffPlus.get().modeCoordinator.isInMode(event.getPlayer().getUniqueId())
+                    && !player.isSneaking()) {
                 event.setCancelled(true);
-            }
-
-            if (StaffPlus.get().thirteenPlus) {
-                if (event.getClickedBlock().getState() instanceof Container
-                        && StaffPlus.get().modeCoordinator.isInMode(event.getPlayer().getUniqueId())
-                        && !player.isSneaking()) {
-                    event.setCancelled(true);
-                    Container container = (Container) event.getClickedBlock().getState();
-                    if(container.getInventory().getType().equals(InventoryType.CHEST)) {
-                        Inventory chestView = Bukkit.createInventory(event.getPlayer(), container.getInventory().getSize());
-                        chestView.setContents(container.getInventory().getContents());
-                        event.getPlayer().openInventory(chestView);
-                        StaffPlus.get().viewedChest.put(chestView, event.getClickedBlock());
-                        StaffPlus.get().inventoryHandler.addVirtualUser(player.getUniqueId());
-                    }else{
-                        Inventory chestView = Bukkit.createInventory(event.getPlayer(), container.getInventory().getType());
-                        chestView.setContents(container.getInventory().getContents());
-                        event.getPlayer().openInventory(chestView);
-                        StaffPlus.get().viewedChest.put(chestView, event.getClickedBlock());
-                        StaffPlus.get().inventoryHandler.addVirtualUser(player.getUniqueId());
-                    }
-
-                }
-            } else {
-
-                if (event.getClickedBlock().getState() instanceof Chest &&
-                        StaffPlus.get().modeCoordinator.isInMode(event.getPlayer().getUniqueId())
-                        && !player.isSneaking()) {
-                    event.setCancelled(true);
-                    Chest chest = (Chest) event.getClickedBlock().getState();
-                    Inventory view = chest.getInventory();
-                    Inventory chestView = Bukkit.createInventory(event.getPlayer(), view.getType());
-                    chestView.setContents(view.getContents());
+                Container container = (Container) event.getClickedBlock().getState();
+                if (container.getInventory().getType().equals(InventoryType.CHEST)) {
+                    Inventory chestView = Bukkit.createInventory(event.getPlayer(), container.getInventory().getSize());
+                    chestView.setContents(container.getInventory().getContents());
+                    event.getPlayer().openInventory(chestView);
+                    StaffPlus.get().viewedChest.put(chestView, event.getClickedBlock());
+                    StaffPlus.get().inventoryHandler.addVirtualUser(player.getUniqueId());
+                } else {
+                    Inventory chestView = Bukkit.createInventory(event.getPlayer(), container.getInventory().getType());
+                    chestView.setContents(container.getInventory().getContents());
                     event.getPlayer().openInventory(chestView);
                     StaffPlus.get().viewedChest.put(chestView, event.getClickedBlock());
                     StaffPlus.get().inventoryHandler.addVirtualUser(player.getUniqueId());
                 }
+
             }
-        }//end of if click block
+        } else {
+
+            if (event.getClickedBlock().getState() instanceof Chest &&
+                    StaffPlus.get().modeCoordinator.isInMode(event.getPlayer().getUniqueId())
+                    && !player.isSneaking()) {
+                event.setCancelled(true);
+                Chest chest = (Chest) event.getClickedBlock().getState();
+                Inventory view = chest.getInventory();
+                Inventory chestView = Bukkit.createInventory(event.getPlayer(), view.getType());
+                chestView.setContents(view.getContents());
+                event.getPlayer().openInventory(chestView);
+                StaffPlus.get().viewedChest.put(chestView, event.getClickedBlock());
+                StaffPlus.get().inventoryHandler.addVirtualUser(player.getUniqueId());
+            }
+        }
     }
+
 
     private boolean handleInteraction(Player player, ItemStack item, Action action) {
         boolean isHandled = true;
